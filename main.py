@@ -10,7 +10,6 @@
 # }
 
 import torch
-from torch.utils.data import DataLoader
 import random
 from models.C3D_altered import C3D_altered
 from models.my_fc6 import my_fc6
@@ -23,7 +22,7 @@ import os
 import cv2 as cv
 import tempfile
 from torchvision import transforms
-from htbuilder import HtmlElement, div, ul, li, br, hr, a, p, img, styles, classes, fonts
+from htbuilder import HtmlElement, div, br, a, p, img, styles
 from htbuilder.units import percent, px
 
 torch.manual_seed(randomseed)

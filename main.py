@@ -16,7 +16,6 @@ from models.C3D_altered import C3D_altered
 from models.my_fc6 import my_fc6
 from models.score_regressor import score_regressor
 from models.C3D_model import C3D
-import streamlit_analytics
 from opts import *
 import numpy as np
 import streamlit as st
@@ -24,8 +23,6 @@ import os
 import cv2 as cv
 import tempfile
 from torchvision import transforms
-import boto3
-import urllib
 from htbuilder import HtmlElement, div, ul, li, br, hr, a, p, img, styles, classes, fonts
 from htbuilder.units import percent, px
 

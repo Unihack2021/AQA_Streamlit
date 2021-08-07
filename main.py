@@ -194,29 +194,7 @@ def load_weights():
     cnn_loaded = os.path.isfile(m1_path)
     fc6_loaded = os.path.isfile(m2_path)
     c3d_loaded = os.path.isfile(c3d_path)
-    if cnn_loaded and fc6_loaded and c3d_loaded:
-        return
-
-    s3 = boto3.client(
-            's3',
-            aws_access_key_id = st.secrets["access_id"],
-            aws_secret_access_key = st.secrets["access_key"]
-            )
-    if not cnn_loaded:
-        s3.download_file(BUCKET_NAME, BUCKET_WEIGHT_CNN, m1_path)
-    if not fc6_loaded:
-        s3.download_file(BUCKET_NAME, BUCKET_WEIGHT_FC6, m2_path)
-    if not c3d_loaded:
-        urllib.request.urlretrieve(
-            "http://imagelab.ing.unimore.it/files/c3d_pytorch/c3d.pickle",
-            c3d_path
-            )
-
-    # urllib.request.urlretrieve(
-    #         "https://aqa-diving.s3.us-west-2.amazonaws.com/{}".format(BUCKET_WEIGHT_CNN), m1_path)
-    # urllib.request.urlretrieve(
-    #         "https://aqa-diving.s3.us-west-2.amazonaws.com/{}".format(BUCKET_WEIGHT_FC6), m2_path)
-
+    return cnn_loaded and fc6_loaded and c3d_loaded
 
 def image(src_as_string, **style):
     return img(src=src_as_string, style=styles(**style))
@@ -303,8 +281,7 @@ def make_prediction(video_file):
 
 if __name__ == '__main__':
     with st.spinner('Loading to welcome you...'):
-        load_weights()
-    with streamlit_analytics.track(unsafe_password=st.secrets["analytics"]):
+        weights_loaded = load_weights()
         st.title("AI Olympics Judge")
         st.subheader("Upload Olympics diving video and check its AI predicted score")
         footer()
@@ -322,37 +299,40 @@ if __name__ == '__main__':
                 col2.markdown("Actual Score: 84.15")
                 col2_msg = st.empty()
                 col2_msg.error("Please wait. Making predictions now...")
-                make_prediction("sample")
-                col2_msg.empty()
+                if weights_loaded:
+                    make_prediction("sample")
+                    col2_msg.empty()
+                else:
+                    col2_msg.error("Prediction cannot be made at the moment, please try again later.")
 
         else:
             # Display a message while perdicting
             val = 0
             res_img = st.empty()
-            res_msg = st.empty()
-            col1, col2, col3 = st.beta_columns([1,1,1])
+            col1, col2, col3 = st.columns([1,1,1])
+            col2_msg = st.empty()
             with col2:
                 res_img.image(
                     "https://media.tenor.com/images/eab0c68ee47331c4b86d679633e6d7bc/tenor.gif",
                     width = 100)
-                res_msg.markdown("### _Making Prediction now..._")
+                col2_msg.error("Please wait. Making predictions now...")
 
-            # Making prediction
-            frames = preprocess_one_video(video_file)
-            if frames.shape[2] > 400:
-                res_msg.error("The uploaded video is too long.")
-            else:
-                preds = inference_with_one_video_frames(frames)
-                if preds is None:
-                    res_img.empty()
-                    res_msg.error("The uploaded video does not seem to be a diving video.")
+            if weights_loaded:
+                # Making prediction
+                frames = preprocess_one_video(video_file)
+                if frames.shape[2] > 400:
+                    col2_msg.error("The uploaded video is too long.")
                 else:
-                    val = int(preds[0] * 17)
+                    preds = inference_with_one_video_frames(frames)
+                    if preds is None:
+                        res_img.empty()
+                        col2_msg.error("The uploaded video does not seem to be a diving video.")
+                    else:
+                        val = int(preds[0] * 17)
 
-                    # Clear waiting messages and show results
-                    print(f"Predicted score after multiplication: {val}")
-                    res_img.empty()
-                    res_msg.success("Predicted score: {}".format(val))
-
-
-
+                        # Clear waiting messages and show results
+                        print(f"Predicted score after multiplication: {val}")
+                        res_img.empty()
+                        col2_msg.success("Predicted score: {}".format(val))
+            else:
+                col2_msg.error("Prediction cannot be made at the moment, please try again later.")

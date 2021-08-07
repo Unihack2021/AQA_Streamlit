@@ -1,7 +1,5 @@
 # AQA Streamlit Web App
 
-<p align="center"> <img src="aqa_streamlit.gif?raw=true" alt="diving_video" width="600"/> </p>
-
 This repo contains the Streamlit application code to judge the Olympics diving events based on the following CVPR paper. 
 
 ```
@@ -14,10 +12,8 @@ This repo contains the Streamlit application code to judge the Olympics diving e
 }
 ```
 
-## To run locally
+## To run
 
 ```
-git fetch origin local
-git checkout local
-streamlit run main.app
+streamlit run main.py
 ```

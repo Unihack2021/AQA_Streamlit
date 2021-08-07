@@ -1,1 +1,4 @@
 .env
+_pycache
+models/_pycache
+c3d.pickle

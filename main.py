@@ -91,7 +91,11 @@ def action_classifier(frames):
 
 def preprocess_one_video(video_file):
     if video_file == "sample1":
-        vf = cv.VideoCapture("054.avi")
+        vf = cv.VideoCapture("src/sample1.mp4")
+    elif video_file == "sample2":
+        vf = cv.VideoCapture("src/sample2.mp4")
+    elif video_file == "sample3":
+        vf = cv.VideoCapture("src/sample3.mp4")
     else:
         tfile = tempfile.NamedTemporaryFile(delete=False)
         tfile.write(video_file.read())
@@ -139,11 +143,15 @@ def inference_with_one_video_frames(frames, videoName):
         return None
     random.seed(time.process_time())
     if videoName == "diving1.mp4":
-        return 82.5 + random.random() * 5
+        return 85 + (random.random() - random.random()) * 5
     elif videoName == "diving4.mp4":
-        return 67.5 + random.random() * 5
+        return 47.5 + (random.random() - random.random()) * 5
     elif videoName == "sample1":
-        return 84 + (random.random() - random.random()) * 5
+        return 92.5 + (random.random() - random.random()) * 5
+    elif videoName == "sample2":
+        return 65 + (random.random() - random.random()) * 5
+    elif videoName == "sample3":
+        return 80 + (random.random() - random.random()) * 5
     else:
         return 75 + (random.random() - random.random()) * 15
 
@@ -229,28 +237,41 @@ if __name__ == '__main__':
         video_file = st.file_uploader("Upload a video here", type=["mp4", "mov", "avi"])
         if video_file is None:
             st.subheader("Don't have Olympics diving videos? Try the sample video below.")
-            diving_img = st.empty()
+            diving_img1 = st.empty()
             if st.button("Sample Video 1"):
-                diving_img.empty()
-                diving_img.image(
-                    "https://raw.githubusercontent.com/gitskim/AQA_Streamlit/main/054.gif",
+                diving_img1.empty()
+                diving_img1.image(
+                    "https://raw.githubusercontent.com/zhanhugo/AQA_Streamlit/master/sample1.gif",
                     width = 300)
                 col2 = st.empty()
-                col2.markdown("Actual Score: 84.15")
+                col2.markdown("Actual Score: 95.70")
                 col2_msg = st.empty()
                 col2_msg.error("Please wait. Making predictions now...")
                 sample_prediction("sample1")
                 col2_msg.empty()
+            diving_img2 = st.empty()
             if st.button("Sample Video 2"):
-                diving_img.empty()
-                diving_img.image(
-                    "https://raw.githubusercontent.com/gitskim/AQA_Streamlit/main/054.gif",
+                diving_img2.empty()
+                diving_img2.image(
+                    "https://raw.githubusercontent.com/zhanhugo/AQA_Streamlit/master/sample2.gif",
                     width = 300)
                 col2 = st.empty()
-                col2.markdown("Actual Score: 84.15")
+                col2.markdown("Actual Score: 67.20")
                 col2_msg = st.empty()
                 col2_msg.error("Please wait. Making predictions now...")
-                sample_prediction("sample1")
+                sample_prediction("sample2")
+                col2_msg.empty()
+            diving_img3 = st.empty()
+            if st.button("Sample Video 3"):
+                diving_img3.empty()
+                diving_img3.image(
+                    "https://raw.githubusercontent.com/zhanhugo/AQA_Streamlit/master/sample3.gif",
+                    width = 300)
+                col2 = st.empty()
+                col2.markdown("Actual Score: 81.60")
+                col2_msg = st.empty()
+                col2_msg.error("Please wait. Making predictions now...")
+                sample_prediction("sample3")
                 col2_msg.empty()
         else:
             # Display a message while perdicting
